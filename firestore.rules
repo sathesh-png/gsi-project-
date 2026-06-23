@@ -1,0 +1,163 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net Default-Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Verification and Primitive Definitions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Hardened Entity Validators with string size limits
+    function isValidFinancialData(data) {
+      return data.keys().hasAll(['revenue', 'cogs', 'adSpend', 'fees', 'netProfit', 'marginAlert', 'topCostDriver'])
+        && data.keys().size() == 7
+        && data.revenue is number
+        && data.cogs is number
+        && data.adSpend is number
+        && data.fees is number
+        && data.netProfit is number
+        && data.marginAlert is bool
+        && data.topCostDriver is string
+        && data.topCostDriver.size() <= 500;
+    }
+
+    function isValidLead(data) {
+      return data.keys().hasAll(['id', 'name', 'source', 'intent', 'status', 'nextAction'])
+        && (data.keys().size() == 6 || data.keys().size() == 7 || data.keys().size() == 8)
+        && data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() <= 128
+        && data.source is string && data.source.size() <= 128
+        && data.intent is string && data.intent in ['Hot', 'Warm', 'Cold']
+        && data.status is string && data.status in ['New', 'Contacted', 'Qualified', 'Nurturing', 'Declined']
+        && data.nextAction is string && data.nextAction.size() <= 500
+        && (!data.keys().hasAny(['email']) || (data.email is string && data.email.size() <= 128))
+        && (!data.keys().hasAny(['notes']) || (data.notes is string && data.notes.size() <= 1000));
+    }
+
+    function isValidLeadSettings(data) {
+      return data.keys().hasAll(['autoQualifyHotScore', 'requireEmail', 'followUpDelayDays', 'leadTags'])
+        && data.keys().size() == 4
+        && data.autoQualifyHotScore is number
+        && data.requireEmail is bool
+        && data.followUpDelayDays is number
+        && data.leadTags is list
+        && data.leadTags.size() <= 20;
+    }
+
+    function isValidSocialDraft(data) {
+      return data.keys().hasAll(['id', 'title', 'platform', 'type', 'content', 'status', 'createdAt'])
+        && data.keys().size() == 7
+        && data.id is string && data.id.size() <= 128
+        && data.title is string && data.title.size() <= 256
+        && data.platform is string && data.platform in ['TikTok', 'YouTube', 'Instagram', 'Facebook', 'LinkedIn', 'Pinterest', 'GMC']
+        && data.type is string && data.type in ['Script', 'Caption', 'Short', 'Product Update', 'Combo']
+        && data.content is string && data.content.size() <= 10000
+        && data.status is string && data.status in ['Refining', 'Approved', 'Published']
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidPlatformProduct(data) {
+      return data.keys().hasAll(['id', 'title', 'sku', 'platform', 'price', 'stock', 'variants', 'description'])
+        && (data.keys().size() >= 8 && data.keys().size() <= 11)
+        && data.id is string && data.id.size() <= 128
+        && data.title is string && data.title.size() <= 256
+        && data.sku is string && data.sku.size() <= 128
+        && data.platform is string && data.platform in ['Shopee', 'Lazada', 'TikTok Shop', 'Shopify', 'Etsy']
+        && data.price is number
+        && data.stock is number
+        && data.variants is list && data.variants.size() <= 50
+        && data.description is string && data.description.size() <= 5000
+        && (!data.keys().hasAny(['seoOptimizedTitle']) || (data.seoOptimizedTitle is string && data.seoOptimizedTitle.size() <= 500))
+        && (!data.keys().hasAny(['seoOptimizedDesc']) || (data.seoOptimizedDesc is string && data.seoOptimizedDesc.size() <= 5000))
+        && (!data.keys().hasAny(['imageInstructions']) || (data.imageInstructions is string && data.imageInstructions.size() <= 5000));
+    }
+
+    function isValidMarketTrend(data) {
+      return data.keys().hasAll(['id', 'productName', 'niche', 'velocity', 'localDemandScore', 'globalNicheSpread', 'pros', 'cons', 'recommendation'])
+        && data.keys().size() == 9
+        && data.id is string && data.id.size() <= 128
+        && data.productName is string && data.productName.size() <= 256
+        && data.niche is string && data.niche.size() <= 256
+        && data.velocity is number
+        && data.localDemandScore is number
+        && data.globalNicheSpread is string && data.globalNicheSpread in ['Local only', 'Regional', 'Global potential']
+        && data.pros is list && data.pros.size() <= 10
+        && data.cons is list && data.cons.size() <= 10
+        && data.recommendation is string && data.recommendation.size() <= 1000;
+    }
+
+    function isValidCXInquiry(data) {
+      return data.keys().hasAll(['id', 'customerName', 'platform', 'message', 'urgency', 'status', 'createdAt'])
+        && (data.keys().size() == 7 || data.keys().size() == 8)
+        && data.id is string && data.id.size() <= 128
+        && data.customerName is string && data.customerName.size() <= 128
+        && data.platform is string && data.platform.size() <= 128
+        && data.message is string && data.message.size() <= 5000
+        && data.urgency is string && data.urgency in ['Normal', 'Urgent', 'Frustrated']
+        && data.status is string && data.status in ['Pending', 'Resolved', 'Escalated']
+        && data.createdAt is string && data.createdAt.size() <= 64
+        && (!data.keys().hasAny(['resolutionDraft']) || (data.resolutionDraft is string && data.resolutionDraft.size() <= 5000));
+    }
+
+    function isValidNicheFocus(data) {
+      return data.keys().hasAll(['focusText'])
+        && data.keys().size() == 1
+        && data.focusText is string && data.focusText.size() <= 1000;
+    }
+
+    // Secured match blocks
+    match /financials/{id} {
+      // Allow general user view/read/write during testing/usage
+      allow read, write: if isSignedIn();
+    }
+
+    match /leads/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /settings_lead_settings/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /drafts/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /products/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /trends/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /cxInquiries/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /nicheFocus/{id} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}

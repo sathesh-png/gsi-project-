@@ -1,0 +1,6 @@
+{
+  "name": "E-commerce Executive Suite",
+  "description": "Multi-agent workspace featuring LUNA, JANA, LANA, and MINA for managing social media media, sales leads, online platforms, market trends, and financial performance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

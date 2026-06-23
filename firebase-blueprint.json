@@ -1,0 +1,157 @@
+{
+  "entities": {
+    "FinancialData": {
+      "title": "FinancialData",
+      "description": "Gross margin and financial items for GSI workspace",
+      "type": "object",
+      "properties": {
+        "revenue": { "type": "number", "description": "Total revenue in RM" },
+        "cogs": { "type": "number", "description": "Cost of Goods Sold" },
+        "adSpend": { "type": "number", "description": "Advertising spend" },
+        "fees": { "type": "number", "description": "Marketplace platform fees" },
+        "netProfit": { "type": "number", "description": "Net calculated profits" },
+        "marginAlert": { "type": "boolean", "description": "True if margin is below 15 percent" },
+        "topCostDriver": { "type": "string", "description": "Description of the top cost driver" }
+      },
+      "required": ["revenue", "cogs", "adSpend", "fees", "netProfit", "marginAlert", "topCostDriver"]
+    },
+    "Lead": {
+      "title": "Lead",
+      "description": "Active in-bound leads and content funnels",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "source": { "type": "string", "description": "E.g. TikTok, Shopee, Instagram" },
+        "intent": { "type": "string", "enum": ["Hot", "Warm", "Cold"] },
+        "status": { "type": "string", "enum": ["New", "Contacted", "Qualified", "Nurturing", "Declined"] },
+        "nextAction": { "type": "string" },
+        "email": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "name", "source", "intent", "status", "nextAction"]
+    },
+    "LeadSettings": {
+      "title": "LeadSettings",
+      "description": "Custom parameter rules for lead qualifiers",
+      "type": "object",
+      "properties": {
+        "autoQualifyHotScore": { "type": "number" },
+        "requireEmail": { "type": "boolean" },
+        "followUpDelayDays": { "type": "number" },
+        "leadTags": { "type": "array", "description": "List of string tags for leads" }
+      },
+      "required": ["autoQualifyHotScore", "requireEmail", "followUpDelayDays", "leadTags"]
+    },
+    "SocialDraft": {
+      "title": "SocialDraft",
+      "description": "Social media scripts and captions curated by LUNA",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "platform": { "type": "string", "enum": ["TikTok", "YouTube", "Instagram", "Facebook", "LinkedIn", "Pinterest", "GMC"] },
+        "type": { "type": "string", "enum": ["Script", "Caption", "Short", "Product Update", "Combo"] },
+        "content": { "type": "string" },
+        "status": { "type": "string", "enum": ["Refining", "Approved", "Published"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "platform", "type", "content", "status", "createdAt"]
+    },
+    "PlatformProduct": {
+      "title": "PlatformProduct",
+      "description": "A product listed on Shopee, Lazada or TikTok shop",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "sku": { "type": "string" },
+        "platform": { "type": "string", "enum": ["Shopee", "Lazada", "TikTok Shop", "Shopify", "Etsy"] },
+        "price": { "type": "number" },
+        "stock": { "type": "number" },
+        "variants": { "type": "array" },
+        "description": { "type": "string" },
+        "seoOptimizedTitle": { "type": "string" },
+        "seoOptimizedDesc": { "type": "string" },
+        "imageInstructions": { "type": "string" }
+      },
+      "required": ["id", "title", "sku", "platform", "price", "stock", "variants", "description"]
+    },
+    "MarketTrend": {
+      "title": "MarketTrend",
+      "description": "E-commerce niche speed velocity trends tracked by LANA",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productName": { "type": "string" },
+        "niche": { "type": "string" },
+        "velocity": { "type": "number" },
+        "localDemandScore": { "type": "number" },
+        "globalNicheSpread": { "type": "string", "enum": ["Local only", "Regional", "Global potential"] },
+        "pros": { "type": "array" },
+        "cons": { "type": "array" },
+        "recommendation": { "type": "string" }
+      },
+      "required": ["id", "productName", "niche", "velocity", "localDemandScore", "globalNicheSpread", "pros", "cons", "recommendation"]
+    },
+    "CXInquiry": {
+      "title": "CXInquiry",
+      "description": "Standardized incoming support inquiries",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerName": { "type": "string" },
+        "platform": { "type": "string" },
+        "message": { "type": "string" },
+        "urgency": { "type": "string", "enum": ["Normal", "Urgent", "Frustrated"] },
+        "status": { "type": "string", "enum": ["Pending", "Resolved", "Escalated"] },
+        "resolutionDraft": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "customerName", "platform", "message", "urgency", "status", "createdAt"]
+    },
+    "NicheFocus": {
+      "title": "NicheFocus",
+      "description": "Active workspace campaign niche text",
+      "type": "object",
+      "properties": {
+        "focusText": { "type": "string" }
+      },
+      "required": ["focusText"]
+    }
+  },
+  "firestore": {
+    "/financials/{id}": {
+      "schema": "FinancialData",
+      "description": "Operational budget and fees ledger"
+    },
+    "/leads/{id}": {
+      "schema": "Lead",
+      "description": "Target customer sales acquisition funnel cards"
+    },
+    "/settings_lead_settings/{id}": {
+      "schema": "LeadSettings",
+      "description": "Qualification score and rule limits"
+    },
+    "/drafts/{id}": {
+      "schema": "SocialDraft",
+      "description": "Content files compiled by LUNA"
+    },
+    "/products/{id}": {
+      "schema": "PlatformProduct",
+      "description": "E-store inventory catalog items"
+    },
+    "/trends/{id}": {
+      "schema": "MarketTrend",
+      "description": "Hot niche growth analytics"
+    },
+    "/cxInquiries/{id}": {
+      "schema": "CXInquiry",
+      "description": "Fulfillment escalation or customer inquiries desk"
+    },
+    "/nicheFocus/{id}": {
+      "schema": "NicheFocus",
+      "description": "Active product and keyword focus targeting"
+    }
+  }
+}
