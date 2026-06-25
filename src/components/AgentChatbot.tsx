@@ -21,30 +21,6 @@ export default function AgentChatbot({
   onChangeAgent,
   onSaveDraft,
   onAddLead
-}: AgentChatbotProps) const agentInstructions: Record<AgentName, string> = {
-    import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Zap, TrendingUp, DollarSign, Send, RotateCcw, Bot, User, Flame, HelpCircle } from 'lucide-react';
-import { AgentName } from '../types';
-
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-  sender: string;
-  timestamp: string;
-}
-
-interface AgentChatbotProps {
-  currentAgent: AgentName;
-  onChangeAgent: (agent: AgentName) => void;
-  onSaveDraft?: (platform: string, content: string) => void;
-  onAddLead?: (name: string, source: string, intent: 'Hot' | 'Warm' | 'Cold') => void;
-}
-
-export default function AgentChatbot({
-  currentAgent,
-  onChangeAgent,
-  onSaveDraft,
-  onAddLead
 }: AgentChatbotProps) {
   const agentInstructions: Record<AgentName, string> = {
     LUNA: `You are LUNA, the Social Media Manager. 
@@ -53,55 +29,17 @@ export default function AgentChatbot({
 3. When creating video content, you MUST generate three separate high-retention 30s scripts, in 9:16 aspect ratio, one each for TikTok, YouTube, and Instagram Reels, including specific visual cues, sound effects, and hooks for each. 
 4. ALWAYS generate image concept titles and descriptions for FB, Insta, LinkedIn, GMC, and Pinterest.
 5. ALWAYS provide an SEO-optimized title and high-conversion hashtags.`,
-    JANA: `...`, // Keep your existing JANA instructions here
-    LANA: `...`, // Keep your existing LANA instructions here
-    MINA: `...`  // Keep your existing MINA instructions here
+    JANA: `You are JANA, the Sales Specialist, Lead Engine & Platform Expert.`,
+    LANA: `You are LANA, the Trend Analyst specializing in Malaysian and global e-commerce.`,
+    MINA: `You are MINA, the Financial Controller.`
   };
 
   const [messages, setMessages] = useState<Record<AgentName, Message[]>>({
-    LUNA: [
-      {
-        role: 'assistant',
-        sender: 'LUNA',
-        content: 'Salam! I am LUNA, your Social Media Manager. I handle scripts, captions, and brand engagement. Need a TikTok script or viral Instagram caption? Let me help write something engaging, and I will queue it in your Draft Compartment!',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ],
-    JANA: [
-      {
-        role: 'assistant',
-        sender: 'JANA',
-        content: 'Hi! JANA here, Platform Specialist & Lead Engine. Ask me to optimize a product listing, run lead-capture analysis, draft direct client outreach, or simulate a support reply under direct One-Touch guidelines!',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ],
-    LANA: [
-      {
-        role: 'assistant',
-        sender: 'LANA',
-        content: 'Hello! I am LANA, Trend Analyst. I track e-commerce niches, market velocity, and opportunities across Malaysia and Southeast Asia. Drop a product idea, and I will give you a detailed Pro/Con/Recommendation audit!',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ],
-    MINA: [
-      {
-        role: 'assistant',
-        sender: 'MINA',
-        content: 'Greetings. I am MINA, Financial Controller. I analyze COGS, ad spend, and net profits to flag leaks in your budget. Ask me to calculate a profit margin, run a P&L breakout, or troubleshoot pricing!',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ]
+    LUNA: [{ role: 'assistant', sender: 'LUNA', content: 'Salam! I am LUNA.', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }],
+    JANA: [{ role: 'assistant', sender: 'JANA', content: 'Hi! JANA here.', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }],
+    LANA: [{ role: 'assistant', sender: 'LANA', content: 'Hello! I am LANA.', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }],
+    MINA: [{ role: 'assistant', sender: 'MINA', content: 'Greetings. I am MINA.', timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]
   });
-
-  const [inputVal, setInputVal] = useState('');
-  const [loading, setLoading] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll on new messages
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
   }, [messages, currentAgent]);
 
   const handleSend = async () => {
