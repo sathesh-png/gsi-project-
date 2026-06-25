@@ -27,7 +27,7 @@ export default function AgentChatbot({
 2. If no links are provided, generate the post content without including any links. 
 3. When creating video content, you MUST generate three separate high-retention 30s scripts, in 9:16 aspect ratio, one each for TikTok, YouTube, and Instagram Reels, including specific visual cues, sound effects, and hooks for each. 
 4. ALWAYS generate image concept titles and descriptions for FB, Insta, LinkedIn, GMC, and Pinterest.
-5. ALWAYS provide an SEO-optimized title and high-conversion hashtags.`,
+5. ALWAYS provide an SEO-optimized title and high-conversion hashtags. ,
     JANA: `...`, // Keep your existing JANA instructions here
     LANA: `...`, // Keep your existing LANA instructions here
     MINA: `...`  // Keep your existing MINA instructions here
@@ -95,13 +95,20 @@ export default function AgentChatbot({
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    // Update messages locally
-    setMessages((prev) => ({
-      ...prev,
-      [currentAgent]: [...prev[currentAgent], userMsg]
-    }));
-
-    setInputVal('');
+   try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: userMsg.content,
+          history: messages[currentAgent].map(m => ({ role: m.role, content: m.content })),
+          // This now uses the single source of truth defined at the top
+          systemInstruction: agentInstructions[currentAgent] 
+        })
+      });
+      // ... rest of your handleSend code 
     setLoading(true);
 
     try {
