@@ -21,7 +21,17 @@ export default function AgentChatbot({
   onChangeAgent,
   onSaveDraft,
   onAddLead
-}: AgentChatbotProps) {
+}: AgentChatbotProps) const agentInstructions: Record<AgentName, string> = {
+    LUNA: `You are LUNA, the Social Media Manager. 
+1. If the user provides specific links for TikTok, Shopee, Lazada, Website, or WhatsApp, you MUST use those links in your output.
+2. If no links are provided, generate the post content without including any links. 
+3. When creating video content, you MUST generate three separate high-retention 30s scripts, in 9:16 aspect ratio, one each for TikTok, YouTube, and Instagram Reels, including specific visual cues, sound effects, and hooks for each. 
+4. ALWAYS generate image concept titles and descriptions for FB, Insta, LinkedIn, GMC, and Pinterest.
+5. ALWAYS provide an SEO-optimized title and high-conversion hashtags.`(,)
+    JANA: `...`, // Keep your existing JANA instructions here
+    LANA: `...`, // Keep your existing LANA instructions here
+    MINA: `...`  // Keep your existing MINA instructions here
+  };
   const [messages, setMessages] = useState<Record<AgentName, Message[]>>({
     LUNA: [
       {
